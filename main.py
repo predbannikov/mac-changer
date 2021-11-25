@@ -1,16 +1,27 @@
-# This is a sample Python script.
+#!/bin/env python3
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+8 to toggle the breakpoint.
+import subprocess
+import optparse
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def get_argument():
+    parser = optparse.OptionParser()
+    parser.add_option("-i", "--interface", dest="interface", help="Interface to change its MAC address")
+    parser.add_option("-m", "--mac", dest="new_mac", help="New MAC address")
+    (options, arguments) = parser.parse_args()
+    if not options.interface:
+        parser.error("[-] Please specify an interface, use --help for more info.")
+    elif not options.new_mac:
+        parser.error("[-] Please specify a new mac, use --help for more info.")
+    return options
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+def change_mac(interface, new_mac):
+    print("[+] Changing MAC address for " + interface + " to " + new_mac)
+    subprocess.call(["ifconfig", interface, "down"])
+    subprocess.call(["ifconfig", interface, "hw", "ether", new_mac])
+    subprocess.call(["ifconfig", interface, "up"])
+
+
+option = get_argument()
+change_mac(option.interface, option.new_mac)
