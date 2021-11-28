@@ -2,6 +2,7 @@
 
 import subprocess
 import optparse
+import re
 
 
 def get_argument():
@@ -24,4 +25,11 @@ def change_mac(interface, new_mac):
 
 
 option = get_argument()
-change_mac(option.interface, option.new_mac)
+ifconfig_result = subprocess.check_output(["ifconfig", option.interface])
+octet = "[0-9a-fA-F][0-9a-fA-F]"
+rule = '{}:{}:{}:{}:{}:{}'.format(octet, octet, octet, octet, octet, octet)
+print(rule)
+rrule = re.compile(rule)
+mac_address_search_result = re.search(rrule, ifconfig_result)
+# print(rule)
+# change_mac(option.interface, option.new_mac)
